@@ -1,0 +1,19 @@
+- simulate orderbook
+  1) underlying price
+  2) mm order placement
+     1) the market gives feedback to the mm which provides more liquidity (more of its orders are filled)
+     2) mms assume that last mm will keep same strategy
+  3) generate random orders around price, random volume
+     1) random size
+     2) for buys normal distribution centered around a uniform distribution mean diff between fair price
+     3) similar for sells norm dist around uniform dist
+     4) some random amount of market orders (low or high volume)
+     5) cancel some orders
+
+
+market steps
+1) read market price, who provided most liquidity last round
+2) mm1 change orders
+3) mm2 change orders
+4) market orders come in
+5) store edge for each mm, market input on which mm gave more liq, repeat

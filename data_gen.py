@@ -46,7 +46,6 @@ def market_sim():
 
         buy_book, sell_book = gen_market_move(buy_book, sell_book)
 
-        print("index", buy_book.index)
         print("final sell book\n", sell_book)
         print("final buy book\n", buy_book)
 

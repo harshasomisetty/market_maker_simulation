@@ -16,11 +16,16 @@ def FIFO_matching():
 
 
 def cancel_trades(book):
-    frac_to_drop = random.uniform(.4, .5)
-    remove_n = int(frac_to_drop*len(book.index))
+    remove_n = int(random.uniform(.4, .5)*len(book.index))
+    
+    mm_indexes = book[book.MM.isin([1, 2])].index
     
     drop_indices = np.random.choice(book.index, remove_n, replace=False)
-    return book.drop(drop_indices)
+
+    final_drop = np.delete(drop_indices, np.argwhere(np.isin(drop_indices, mm_indexes)))
+
+    return book.drop(final_drop).reset_index(drop=True)
+
     
 def gen_market_move(buy_book, sell_book):
 
@@ -29,11 +34,8 @@ def gen_market_move(buy_book, sell_book):
     # 3) Store edge for market makers
     
 
-    print("before: ", len(buy_book.index), len(sell_book.index))
     
     buy_book, sell_book = cancel_trades(buy_book), cancel_trades(sell_book)
 
-    print("after: ", len(buy_book.index), len(sell_book.index))
-    
     return buy_book, sell_book
     

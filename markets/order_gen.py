@@ -18,18 +18,24 @@ def gen_orders(price, time, order_book, buy=True):
 
     order_sizes = np.round(np.random.uniform(low=1, high=5, size=num_of_orders))
 
-    final_orders = [[order_prices[i], order_sizes[i], time, 0] for i in range(num_of_orders)]
+    final_orders = [[order_prices[i], int(order_sizes[i]), time, 0] for i in range(num_of_orders)]
 
     temp_book = pd.DataFrame(final_orders, columns = ['Price', 'Size', 'Time', "MM"])
     
-    return pd.concat([order_book, temp_book]).sort_values(by=['Price', 'Time'], ascending=[False, True]).reset_index(drop=True)
+    final_book = pd.concat([order_book, temp_book]).sort_values(by=['Price', 'Time'], ascending=[False, True])
 
+    # if buy:
+    #     print("drop buy extras", final_book[final_book.Price > price].index)
+    #     # final_book = final_book.drop(final_book[final_book.Price > price].index)
+    # else:
+    #     print("drop sell extras ", final_book[final_book.Price < price].index)
+    #     # final_book = final_book.drop(final_book[final_book.Price < price].index)
+
+    return final_book.reset_index(drop=True)
 
 def gen_limit_orders(price, time, buy_book, sell_book):
     buy_book = gen_orders(price, time, buy_book)
+    
     sell_book = gen_orders(price, time, sell_book, False)
     
-    # TODO fix orderbook limits
-# problem is the limit orders are overlapping, i don't now if i should fix this in greater market correction, or in same step'
-
     return buy_book, sell_book

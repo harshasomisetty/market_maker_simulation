@@ -21,11 +21,11 @@ def mm_move(mm, price, time, buy_book, sell_book, redo_orders = False, reward = 
 
         
     print("MM price", price_center, spread_size, price_center*(1-spread_size))
-    mm_buy = [[price_center*(1-spread_size), mm["order_size"], time, mm["id"]]]
+    mm_buy = [[round(price_center*(1-spread_size), 1), mm["order_size"], time, mm["id"]]]
     temp_buy_book = pd.DataFrame(mm_buy, columns = ['Price', 'Size', 'Time', "MM"])
 
 
-    mm_sell = [[price_center*(1+spread_size), mm["order_size"], time, mm["id"]]]
+    mm_sell = [[round(price_center*(1+spread_size), 1), mm["order_size"], time, mm["id"]]]
     
     temp_sell_book = pd.DataFrame(mm_sell, columns = ['Price', 'Size', 'Time', "MM"])
 
@@ -33,8 +33,8 @@ def mm_move(mm, price, time, buy_book, sell_book, redo_orders = False, reward = 
 
     sell_book.drop(sell_book[sell_book.MM == mm["id"]].index, inplace = True)
     
-    final_buy_book = pd.concat([buy_book, temp_buy_book]).sort_values(by=['Price', 'Time'], ascending=[False, True])
+    final_buy_book = pd.concat([buy_book, temp_buy_book]).sort_values(by=['Price', 'Time'], ascending=[False, True]).reset_index(drop=True)
         
-    final_sell_book = pd.concat([sell_book, temp_sell_book]).sort_values(by=['Price', 'Time'], ascending=[True, True])
+    final_sell_book = pd.concat([sell_book, temp_sell_book]).sort_values(by=['Price', 'Time'], ascending=[True, True]).reset_index(drop=True)
     
     return final_buy_book, final_sell_book

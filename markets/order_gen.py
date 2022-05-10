@@ -27,11 +27,11 @@ def gen_orders(price, time, order_book, buy=True):
 
     if buy:
         final_book = pd.concat([order_book, temp_book]).sort_values(by=['Price', 'Time'], ascending=[False, True]).reset_index(drop=True)
-        final_book = final_book.drop(final_book[(final_book.Price > price * .95) & (final_book.MM == 0)].index)
+        final_book = final_book.drop(final_book[(final_book.Price > price * .97) & (final_book.MM == 0)].index)
         
     else:
         final_book = pd.concat([order_book, temp_book]).sort_values(by=['Price', 'Time'], ascending=[False, False]).reset_index(drop=True)
-        final_book = final_book.drop(final_book[(final_book.Price < price*1.05) & (final_book.MM == 0)].index)
+        final_book = final_book.drop(final_book[(final_book.Price < price*1.03) & (final_book.MM == 0)].index)
 
     return final_book
 

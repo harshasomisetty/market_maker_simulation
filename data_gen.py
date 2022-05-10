@@ -24,6 +24,7 @@ def market_sim():
     sell_book = pd.DataFrame(columns = ['Price', 'Size', 'Time', "MM"])
 
     buy_book, sell_book = mm_move(mm1, start_price, 0, buy_book, sell_book, False, 0)
+    buy_book, sell_book = mm_move(mm2, start_price, 0, buy_book, sell_book, False, 0)
     
     buy_book, sell_book = gen_limit_orders(start_price, 0, buy_book, sell_book)
     
@@ -31,7 +32,7 @@ def market_sim():
     print("final sell book", sell_book)
     print("final buy book", buy_book)
     
-    for time, price in enumerate(price_series[:1], 1):
+    for time, price in enumerate(price_series[:2], 1):
         print("\n\nnext step: time", time, "price", price, "\n\n")
 
         # TODO change reward
@@ -42,7 +43,7 @@ def market_sim():
 
         buy_book, sell_book = gen_limit_orders(price, time, buy_book, sell_book)
 
-        buy_book, sell_book = gen_market_move(buy_book, sell_book)
+        buy_book, sell_book = gen_market_move(buy_book, sell_book, mm1, mm2)
 
         print("final sell book\n", sell_book)
         print("final buy book\n", buy_book)

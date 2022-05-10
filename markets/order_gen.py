@@ -22,16 +22,18 @@ def gen_orders(price, time, order_book, buy=True):
 
     temp_book = pd.DataFrame(final_orders, columns = ['Price', 'Size', 'Time', "MM"])
     
-    final_book = pd.concat([order_book, temp_book]).sort_values(by=['Price', 'Time'], ascending=[False, True])
+
+    final_book = None
 
     if buy:
-        # print("drop buy extras", final_book[final_book.Price > price].index)
-        final_book = final_book.drop(final_book[final_book.Price > price*.97].index)
+        final_book = pd.concat([order_book, temp_book]).sort_values(by=['Price', 'Time'], ascending=[False, True]).reset_index(drop=True)
+        final_book = final_book.drop(final_book[(final_book.Price > price * .95) & (final_book.MM == 0)].index)
+        
     else:
-        # print("drop sell extras ", final_book[final_book.Price < price].index)
-        final_book = final_book.drop(final_book[final_book.Price < price*1.03].index)
+        final_book = pd.concat([order_book, temp_book]).sort_values(by=['Price', 'Time'], ascending=[False, False]).reset_index(drop=True)
+        final_book = final_book.drop(final_book[(final_book.Price < price*1.05) & (final_book.MM == 0)].index)
 
-    return final_book.reset_index(drop=True)
+    return final_book
 
 def gen_limit_orders(price, time, buy_book, sell_book):
     buy_book = gen_orders(price, time, buy_book)

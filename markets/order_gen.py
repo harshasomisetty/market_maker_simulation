@@ -24,12 +24,12 @@ def gen_orders(price, time, order_book, buy=True):
     
     final_book = pd.concat([order_book, temp_book]).sort_values(by=['Price', 'Time'], ascending=[False, True])
 
-    # if buy:
-    #     print("drop buy extras", final_book[final_book.Price > price].index)
-    #     # final_book = final_book.drop(final_book[final_book.Price > price].index)
-    # else:
-    #     print("drop sell extras ", final_book[final_book.Price < price].index)
-    #     # final_book = final_book.drop(final_book[final_book.Price < price].index)
+    if buy:
+        # print("drop buy extras", final_book[final_book.Price > price].index)
+        final_book = final_book.drop(final_book[final_book.Price > price*.97].index)
+    else:
+        # print("drop sell extras ", final_book[final_book.Price < price].index)
+        final_book = final_book.drop(final_book[final_book.Price < price*1.03].index)
 
     return final_book.reset_index(drop=True)
 

@@ -28,7 +28,7 @@ def cancel_trades(book):
 
     
 def gen_market_move(buy_book, sell_book):
-
+    
     # for market orders, just generate random quantity (either large or small), and then fifo that to the orderbook
 
     # 3) Store edge for market makers

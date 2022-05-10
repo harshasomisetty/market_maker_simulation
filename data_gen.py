@@ -13,10 +13,8 @@ sigma = 0.01
 start_price = 5
 periods = 1000
 
-mm1 = {"edge": 0, "inven": 15, "max_inven": 30, "order_size": 3, "id": 1}
-# mm2 = {edge: 0, inven: 5, max_inven: 15}
-
-
+mm1 = {"edge": 0, "inven": 15, "max_inven": 30, "order_size": 5, "id": 1}
+mm2 = {"edge": 0, "inven": 5, "max_inven": 15, "order_size": 3, "id": 2}
 
 
 def market_sim():
@@ -38,9 +36,9 @@ def market_sim():
 
         # TODO change reward
 
-        # TODO add move for second MM
-
         buy_book, sell_book = mm_move(mm1, price, time, buy_book, sell_book, True, 0)
+
+        buy_book, sell_book = mm_move(mm2, price, time, buy_book, sell_book, True, 0)
 
         buy_book, sell_book = gen_limit_orders(price, time, buy_book, sell_book)
 

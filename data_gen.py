@@ -13,8 +13,6 @@ sigma = 0.01
 start_price = 5
 periods = 1000
 
-
-
 def market_sim():
     mm1 = {"edge": [], "inven": [15], "max_inven": 30, "order_size": 5, "id": 1}
     mm2 = {"edge": [], "inven": [5], "max_inven": 15, "order_size": 3, "id": 2}
@@ -33,8 +31,8 @@ def market_sim():
     print("final sell book", sell_book)
     print("final buy book", buy_book)
     
-    for time, price in enumerate(price_series[:20], 1):
-        print("\n\nnext step: time", time, "price", price, "\n\n")
+    for time, price in enumerate(price_series[:50], 1):
+        # print("\n\nnext step: time", time, "price", price, "\n\n")
 
         # TODO change reward
 
@@ -46,9 +44,10 @@ def market_sim():
 
         buy_book, sell_book, mm1, mm2, vol_contributor = gen_market_move(buy_book, sell_book, mm1, mm2, price)
 
-        print("final sell book\n", sell_book)
-        print("final buy book\n", buy_book)
+        # print("final sell book\n", sell_book)
+        # print("final buy book\n", buy_book)
         print(f"final mm stats: \n{mm1} \n{mm2}")
+        print("***")
 
 if __name__ == "__main__":
     market_sim()

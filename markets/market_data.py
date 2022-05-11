@@ -29,7 +29,7 @@ def gen_market_move(buy_book, sell_book, mm1, mm2, price):
         edges = [0,0]
         volume = [0,0]
         # print("book", book)
-        print(f"\n\ntrade quant {trade_quant}")
+        # print(f"\n\ntrade quant {trade_quant}")
         for index, row in book.iterrows():
             if trade_quant > 0:
                 cur_size = row["Size"]
@@ -51,17 +51,17 @@ def gen_market_move(buy_book, sell_book, mm1, mm2, price):
                     
                 # MM Moves recalcing edge
                 if row["MM"] == 1:
-                    print(f"IS MM 1 ORDER: {quant_fulfilled*abs(row['Price'] - price)}")
+                    # print(f"IS MM 1 ORDER: {quant_fulfilled*abs(row['Price'] - price)}")
                     edges[0] += quant_fulfilled*abs(row["Price"] - price)
                     volume[0] += quant_fulfilled
                 elif row["MM"] == 2:
                     edges[1] += quant_fulfilled*abs(row["Price"] - price)
                     volume[1] += quant_fulfilled                    
-                    print(f"IS MM 2 ORDER {quant_fulfilled*abs(row['Price'] - price)}")                  
+                    # print(f"IS MM 2 ORDER {quant_fulfilled*abs(row['Price'] - price)}")                  
             else:
                 break
             
-        print(f"final edges {edges}")
+        # print(f"final edges {edges}")
         
         return book, edges, volume
 
@@ -80,13 +80,13 @@ def gen_market_move(buy_book, sell_book, mm1, mm2, price):
 
     mm1["inven"].append(sell_vol[0] - buy_vol[0])
     mm2["inven"].append(sell_vol[1] - buy_vol[1])
-
+    # print(f"Buys: {buy_vol} sells: {sell_vol}")
     # if true, then mm1 contributed most to volume
     vol_contributor = (sell_vol[0] + buy_vol[0]) > (sell_vol[1] + buy_vol[1])
     
     mm1["edge"].append(edges[0] + edges1[0])
     mm2["edge"].append(edges[1] + edges1[1])
-    print(f"MM1 EDGE {mm1['edge']} and mm2 {mm2['edge']}")
+    # print(f"MM1 EDGE {mm1['edge']} and mm2 {mm2['edge']}")
 
     # remember which orders are filled by MMs
     

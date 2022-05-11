@@ -1,19 +1,149 @@
-- simulate orderbook
-  1) underlying price
-  2) mm order placement
-     1) the market gives feedback to the mm which provides more liquidity (more of its orders are filled)
-     2) mms assume that last mm will keep same strategy
-  3) generate random orders around price, random volume
-     1) random size
-     2) for buys normal distribution centered around a uniform distribution mean diff between fair price
-     3) similar for sells norm dist around uniform dist
-     4) some random amount of market orders (low or high volume)
-     5) cancel some orders
+#+TITLE: Game Theoretic Approach to Modeling Differences in Market-Making Strategies in a Multi-player, Varied Market Micro-structure
+#+AUTHOR: Harsha Somisetty
+#+DATE: May 9, 2022
+#+OPTIONS: toc:nil
+#+SETUPFILE: ~/.emacs.d/config/latex_template.org
+* Introduction
+
+** Markets and Orderbooks
+
+Markets are the manifestation of human's desire to exchange risk, and in turn, derive profit. Market participants include people with a directional bias (think a asset price will increase or decrease), or simply short term, price-agnostic traders who try to make money which ever way the price goes
+
+Participants demonstrate these views by submitting "orders," to a market, such as the order to buy 10 Apple stock at $100 each. All the participant's orders are then gathered together and represented in a data structure known as a "orderbook" When two participant—a buyer and a seller— both agree on a price to transact, in our case, a seller agreeing to sell 10 apple stock at $100 each (this is referred to as filling an order).
+
+The orders stored in the order book are referred to as "limit orders," and orders that participants want immediately filled (and are matched to pre-existing limit orders by the exchange) are referred to as "market orders." The orderbook then represents the "liquidity" of a market, or the easiness of how participants can immediately buy or sell their assets to as close to their desired price as possible. However, with buyers wanting to buy for as low as possible, and sellers wanting to sell for as high as possible, markets would not be very liquid without Market Makers, or MMs.
+*** Liquidity and Market Makers
+MMs fix this liquidity issue by both buying at a slightly higher price than the current market and selling at a slightly lower price than the market: with this non-directional bias, they make money every time they complete one buy and sell (known as the spread). Thus, MMs make some "risk free" money by earning the spread, and in the process, improve trading conditions for directional traders to actually complete orders and have better fills.
+
+Indeed, MMs have to determine various parameters of their strategies, including bid/ask prices (what price they buy and sell at), quote size (how much they buy and sell). These are influenced by MMs' risk tolerance level, and current inventory (how much of the asset they already own, which they try to limit to not have a directional bias, but need in order to sell)
+
+Further, MMs' actions are dictated by market micro-structure and actions. Micro-structure refers to the specific characteristics of a market, like transaction costs, number of other participants (and therefore volume traded), trade matching algorithms (if trades are matched FIFO, first in first out, or Pro-rata, proportionally), and if market prices are generally increasing or decreasing.
+* Model Discussion
+** Formal elements
+With this, we can now investigate a formal model that attempts study if the interactions of 2 MMs resents in an equilibrium trading strategy. Specific, our formal elements will include
+1) Players
+   1) MM A: higher base cost, must have a wider spread to break even
+   2) MM B: lower base cost, can offer a tighter spread, but less money, so gets less overall fills
+2) Actions
+   1) Players can notice state, change their strategy parameters (mainly spread size), which changes their orders in the orderbook
+   2) Anticipate how other player will change their spread size
+3) When to act
+   1) Players will act on discrete time steps
+   2) Extensive form will be repeated at each time step
+4) Outcomes
+   1) Each time step, "edge" will be calculated, which is the |price filled - fair price|
+5) Preferences
+   1) Players want to maximize edge over time
+
+*** Extensive Form
+With this basic game defined, we can visualize a one-step extensive form as follows. This game involves an interplay for market makers to widen their spread to increase profits, but tighten their spread to compete for more fills and increase their reward. The players each analyze the market feedback (who got the last reward, current fair price), and independently decide to tighten (TS), keep (KS), and widen (WS) their spread (as well as their price center of their bid in order to increase or decrease their bid). Indeed, if a MM sees they have not received adequate fills, they would tighten spreads, and vice versa. Then, nature randomly decides to have a high (HV) or low (LV) volume trade period, which affects how much fills each market maker gets.
 
 
-market steps
-1) read market price, who provided most liquidity last round
-2) mm1 change orders
-3) mm2 change orders
-4) market orders come in
-5) store edge for each mm, market input on which mm gave more liq, repeat
+
+ \begin{tikzpicture}[scale=1.5,font=\footnotesize]
+  \tikzstyle{solid node}=[circle,draw,inner sep=1.5,fill=black]
+  \tikzstyle{hollow node}=[circle,draw,inner sep=1.5]
+  \tikzstyle{level 1}=[level distance=15mm,sibling distance=3cm]
+  \tikzstyle{level 2}=[level distance=15mm,sibling distance=1.9cm]
+  \tikzstyle{level 3}=[level distance=15mm,sibling distance=.95cm]
+  \tikzstyle{level 4}=[level distance=15mm,sibling distance=1cm]
+
+  \node(start)[solid node,label=above:{$P1$}]{}
+    child{node[hollow node, label=above:{P2}]{}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(-.5, 0)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(1, .5)}]{} edge from parent node[right]{HV}}
+        edge from parent node[left]{TS}}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(-.5+r, .25)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(1+r, .5)}]{} edge from parent node[right]{HV}}
+        edge from parent node[left]{KS}}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(-.5+2r, .5)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(1+2r, .5)}]{} edge from parent node[right]{HV}}
+        edge from parent node[left]{WS}}
+      edge from parent node[left]{TS}
+}
+child[level distance=55mm]{node[hollow node, label=above:{P2}]{}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(0, 0+r)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(1.5, .75+r)}]{} edge from parent node[right]{HV}}
+        edge from parent node[left]{TS}}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(0, .25)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(1.5, .75)}]{} edge from parent node[right]{HV}}
+        edge from parent node[left]{KS}}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(0+r, .5)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(1.5+r, .75)}]{} edge from parent node[right]{HV}}
+        edge from parent node[left]{WS}}
+      edge from parent node[right]{KS}
+}
+    child{node[hollow node, label=above:{P2}]{}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(.5, 0+2r)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(2, .5+2r)}]{} edge from parent node[right]{HV}}
+        edge from parent node[left]{TS}}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(.5, .25+r)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(2, .75+r)}]{} edge from parent node[right]{HV}}
+        edge from parent node[left]{KS}}
+      child{node[hollow node, label=above left:{nature}]{}
+        child{node[hollow node, label=below:{(.5, .5)}]{} edge from parent node[left]{LV}}
+        child{node[hollow node, label=below:{(2, 1)}]{} edge from parent node[right]{HV}}
+        edge from parent node[right]{WS}}
+      edge from parent node[right]{WS}
+};
+\draw[dashed](start-1)to(start-2)to(start-3);
+\end{tikzpicture}
+
+To explain the proposed payoffs, we first consider the fact that MM1 has higher operating costs, and so has to maintain a wider spread, but has more inventory capacity. This results in negative payoffs if MM1 does not maintain sufficient fills, but if it does, then would receive a larger payout. Meanwhile, MM2 has much less operating costs (so no negative payoff), but a lower max payout. Also, the tighter the spread a MM chooses, the lower their payout, but higher the chance of receiving a reward.
+** Simulation
+
+Since this game is highly state dependent and has extensive variables,, it is not possible to mathematically solve for an equilibrium of which MM wins out. Indeed, as markets are often simulated and not calculated (which is not possible without making crippling assumptions), we will create a basic simulate to carry out the game for a number of iterations and test if there if a certain MM wins out over time.
+
+Specifically, the program will simulate MMs that dynamically change their strategies (spread size and bid/ask prices) based on previous performance. Furthermore, we will implement the FIFO matching algorithm (where market orders are filled with the earliest and best price limit order). We will also conduct the simulation in ranging (constant price) and trending (where price increases and decreases over time). 
+
+The main simulation code (in Python) looks like the following, with further details abstracted away through function methods. As a brief explanation, an overall price time series is generated, and an orderbook to store the limit orders are instantiated. Then, each MM places their orders (the MMs order placement sequence do not affect each other at this point), other random market participants place their own limit orders, and finally, even more random participants make requests for market orders. In this last stage, we monitor how much fills each MM gets, and relay the information to the next cycle.
+
+#+begin_src python
+    def market_sim():
+      mm1 = {"edge": [], "inven": [15], "max_inven": 30, "order_size": 5, "id": 1}
+      mm2 = {"edge": [], "inven": [5], "max_inven": 15, "order_size": 3, "id": 2}
+
+      vol_contributor = 0
+
+      price_series = gen_price_series(mu, sigma, periods, start_price)
+    
+      buy_book = pd.DataFrame(columns = ['Price', 'Size', 'Time', "MM"])
+      sell_book = pd.DataFrame(columns = ['Price', 'Size', 'Time', "MM"])
+
+      buy_book, sell_book = mm_move(mm1, start_price, 0, buy_book, sell_book, 0)
+      buy_book, sell_book = mm_move(mm2, start_price, 0, buy_book, sell_book, 0)
+    
+      buy_book, sell_book = gen_limit_orders(start_price, 0, buy_book, sell_book)
+    
+      for time, price in enumerate(price_series[:50], 1):
+          # print("\n\nnext step: time", time, "price", price, "\n\n")
+
+          buy_book, sell_book = mm_move(mm1, price, time, buy_book, sell_book, vol_contributor)
+
+          buy_book, sell_book = mm_move(mm2, price, time, buy_book, sell_book, 2-vol_contributor)
+
+          buy_book, sell_book = gen_limit_orders(price, time, buy_book, sell_book)
+
+          buy_book, sell_book, mm1, mm2, vol_contributor =
+          gen_market_move(buy_book, sell_book, mm1, mm2, price)
+
+#+end_src
+
+** Discussion
+
+After conducting the simulation, we plot the edges that each MM collects over time. We present the edges for the various market regimes (trending or ranging) here. Through these images, and further investigation of fills provided from each MM, we come to the following conclusions.
+
+
+First, the extensive appearance of the orange line across the trending markets shows that MM2 largely acquires most of the edge in the market, where as interestingly, in the stable market, MM2 had almost the same edge as MM1 (the total edge collected is also visible in the legends). This is likely due to MM2 not having to compensate for its excessive inventory, where as MM1 would be much quicker to adapt it's inventory to changing market prices. As previously hypothesized, MM1 does receive larger payouts. Finally, investigating smaller specific periods, we see that the MMs take turns dominating the available edge in the market. Although this could be a feature of the game, we cannot rule out the fact that this phenomenon might be occurring due to the programming features. Overall, we see that MM1 with it's smaller inventory capacity dominates trending markets, where as the MMs are almost equal in stable price markets.
+
+*** Future work
+
+Models in general cannot hope to capture the full complexity of any market, due to the large amount of randomness and participants. This model attempted to capture the extremely basic interactions between two market makers, with very crude heuristics for MMs to change their tactics. Indeed, the immediate improvements would be to add in support for more MMs, as well as more researched methods for MMs to optimize their trades.

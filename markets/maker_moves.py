@@ -1,6 +1,6 @@
 import pandas as pd
 
-def mm_move(mm, price, time, buy_book, sell_book, redo_orders = False, reward = 0):
+def mm_move(mm, price, time, buy_book, sell_book, reward = 0):
     # print("mm move")
     inven_ratio = sum(mm["inven"])/mm["max_inven"]
     price_center = price

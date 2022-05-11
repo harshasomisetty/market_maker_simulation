@@ -82,14 +82,22 @@ def gen_market_move(buy_book, sell_book, mm1, mm2, price):
     mm2["inven"].append(sell_vol[1] - buy_vol[1])
     # print(f"Buys: {buy_vol} sells: {sell_vol}")
     # if true, then mm1 contributed most to volume
-    vol_contributor = (sell_vol[0] + buy_vol[0]) > (sell_vol[1] + buy_vol[1])
+    vol_contributor = 1
+
+    if sell_vol[0] + buy_vol[0] == 0:
+        vol_contributor = 2
+    elif sell_vol[1] + buy_vol[1] == 0:
+        vol_contributor = 0
     
+    # print("vol_contributor", (sell_vol[0] + buy_vol[0]), (sell_vol[1] + buy_vol[1]))
+    # print(f"vol contri {vol_contributor}")
     mm1["edge"].append(edges[0] + edges1[0])
     mm2["edge"].append(edges[1] + edges1[1])
     # print(f"MM1 EDGE {mm1['edge']} and mm2 {mm2['edge']}")
 
     # remember which orders are filled by MMs
-    
+
+    # print(vol_contributor)
 
     
     buy_book, sell_book = cancel_trades(buy_book), cancel_trades(sell_book)

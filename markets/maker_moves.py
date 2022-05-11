@@ -1,8 +1,8 @@
 import pandas as pd
 
 def mm_move(mm, price, time, buy_book, sell_book, redo_orders = False, reward = 0):
-    print("mm move")
-    inven_ratio = mm["inven"]/mm["max_inven"]
+    # print("mm move")
+    inven_ratio = sum(mm["inven"])/mm["max_inven"]
     price_center = price
     spread_size = None
     
@@ -20,7 +20,7 @@ def mm_move(mm, price, time, buy_book, sell_book, redo_orders = False, reward = 
         spread_size = .15
 
         
-    print("MM price", price_center, spread_size, price_center*(1-spread_size))
+    # print("MM price", price_center, spread_size, price_center*(1-spread_size))
     mm_buy = [[round(price_center*(1-spread_size), 1), mm["order_size"], time, mm["id"]]]
     temp_buy_book = pd.DataFrame(mm_buy, columns = ['Price', 'Size', 'Time', "MM"])
 
